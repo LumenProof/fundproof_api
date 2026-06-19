@@ -1,0 +1,47 @@
+{
+  "name": "fundproof-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "build": "nest build",
+    "lint": "eslint \"src/**/*.ts\"",
+    "zk:compile": "tools\\circom.exe circuits/fundproof.circom --r1cs --wasm --sym --output build/circuits",
+    "zk:ptau": "snarkjs powersoftau new bn128 12 ptau/pot12_0000.ptau -v && snarkjs powersoftau contribute ptau/pot12_0000.ptau ptau/pot12_0001.ptau --name=\"FundProof local ptau\" -v -e=\"fundproof local entropy\" && snarkjs powersoftau prepare phase2 ptau/pot12_0001.ptau ptau/pot12_final.ptau -v",
+    "zk:setup": "snarkjs groth16 setup build/circuits/fundproof.r1cs ptau/pot12_final.ptau build/circuits/fundproof_0000.zkey",
+    "zk:contribute": "snarkjs zkey contribute build/circuits/fundproof_0000.zkey build/circuits/fundproof_final.zkey --name=\"FundProof local contribution\" -v -e=\"fundproof zkey entropy\"",
+    "zk:export-vkey": "snarkjs zkey export verificationkey build/circuits/fundproof_final.zkey build/circuits/verification_key.json",
+    "zk:demo-input": "node scripts/generate-demo-input.mjs",
+    "zk:prove": "snarkjs groth16 fullprove build/circuits/input.json build/circuits/fundproof_js/fundproof.wasm build/circuits/fundproof_final.zkey build/circuits/proof.json build/circuits/public.json",
+    "zk:verify": "snarkjs groth16 verify build/circuits/verification_key.json build/circuits/public.json build/circuits/proof.json",
+    "zk:all": "npm run zk:compile && npm run zk:ptau && npm run zk:setup && npm run zk:contribute && npm run zk:export-vkey && npm run zk:demo-input && npm run zk:prove && npm run zk:verify"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-express": "^11.1.6",
+    "@noble/ed25519": "^2.3.0",
+    "@noble/hashes": "^1.8.0",
+    "circomlibjs": "^0.1.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "snarkjs": "^0.7.5"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.10",
+    "@nestjs/schematics": "^11.0.7",
+    "@nestjs/testing": "^11.1.6",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.0",
+    "circomlib": "^2.0.5",
+    "eslint": "^9.29.0",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  }
+}

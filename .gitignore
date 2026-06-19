@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+ptau
+.env
+*.log
+tools/*.exe
