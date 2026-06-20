@@ -9,8 +9,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 soroban-sdk = "23.0.0"
-soroban-bn254 = "23.0.0"
-soroban-groth16-verifier = "23.0.0"
+ark-groth16 = { version = "0.4.0", default-features = false }
+ark-bn254 = { version = "0.4.0", default-features = false, features = ["curve"] }
 
 [dev_dependencies]
 soroban-sdk = { version = "23.0.0", features = ["testutils"] }
