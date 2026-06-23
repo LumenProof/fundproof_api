@@ -1,6 +1,7 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, symbol_short, vec, BytesN, Env, Symbol, Vec,
+    contract, contracterror, contractimpl, contracttype, symbol_short, vec, Bn254G1Affine,
+    Bn254G2Affine, BytesN, Env, Symbol, Vec,
 };
 
 // AUTO-GENERATED VK BYTES (uncompressed). DO NOT EDIT.
@@ -30,19 +31,19 @@ const BN254_FR_SERIALIZED_SIZE: usize = 32;
 #[derive(Clone)]
 #[contracttype]
 pub struct Proof {
-    pub a: [u8; BN254_G1_SERIALIZED_SIZE],
-    pub b: [u8; BN254_G2_SERIALIZED_SIZE],
-    pub c: [u8; BN254_G1_SERIALIZED_SIZE],
+    pub a: Bn254G1Affine,
+    pub b: Bn254G2Affine,
+    pub c: Bn254G1Affine,
 }
 
 #[derive(Clone)]
 #[contracttype]
 pub struct VerifyingKey {
-    pub alpha: [u8; BN254_G1_SERIALIZED_SIZE],
-    pub beta: [u8; BN254_G2_SERIALIZED_SIZE],
-    pub gamma: [u8; BN254_G2_SERIALIZED_SIZE],
-    pub delta: [u8; BN254_G2_SERIALIZED_SIZE],
-    pub ic: Vec<[u8; BN254_G1_SERIALIZED_SIZE]>,
+    pub alpha: Bn254G1Affine,
+    pub beta: Bn254G2Affine,
+    pub gamma: Bn254G2Affine,
+    pub delta: Bn254G2Affine,
+    pub ic: Vec<Bn254G1Affine>,
 }
 
 #[derive(Clone)]
@@ -53,7 +54,7 @@ pub struct VerifiedProof {
     pub expires_at: u64,
 }
 
-pub type Bn254Fr = [u8; BN254_FR_Serialized_SIZE];
+pub type Bn254Fr = [u8; BN254_FR_SERIALIZED_SIZE];
 
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -86,7 +87,7 @@ impl FundProofVerifier {
         }
 
         let bn = env.crypto().bn254();
-        let vk = vk(&env);
+        let vk = vk(&env).map_err(|_| FundProofError::MalformedVerifyingKey)?;
 
         if pub_signals.len() + 1 != vk.ic.len() {
             return Err(FundProofError::MalformedVerifyingKey);
@@ -98,7 +99,7 @@ impl FundProofVerifier {
             vk_x = bn.g1_add(&vk_x, &prod);
         }
 
-        let neg_a = env.crypto().bn254_neg_g1(&proof.a);
+        let neg_a = bn.neg_g1(&proof.a);
         let vp1 = soroban_sdk::vec![&env, neg_a, vk.alpha, vk_x, proof.c];
         let vp2 = soroban_sdk::vec![&env, proof.b, vk.beta, vk.gamma, vk.delta];
 
@@ -107,7 +108,7 @@ impl FundProofVerifier {
         }
 
         env.storage().persistent().set(
-            &PROOF_KEY,
+            &attestation_hash,
             &VerifiedProof {
                 attestation_hash,
                 threshold_cents,
@@ -123,16 +124,22 @@ impl FundProofVerifier {
     }
 }
 
-fn vk(env: &Env) -> VerifyingKey {
+fn vk(env: &Env) -> Result<VerifyingKey, FundProofError> {
     let mut ic = Vec::new(env);
     for val in VK_IC.iter() {
-        ic.push_back(val.clone());
+        ic.push_back(
+            Bn254G1Affine::try_from_bytes(val).map_err(|_| FundProofError::MalformedVerifyingKey)?,
+        );
     }
-    VerifyingKey {
-        alpha: VK_ALPHA.clone(),
-        beta: VK_BETA_2.clone(),
-        gamma: VK_GAMMA_2.clone(),
-        delta: VK_DELTA_2.clone(),
+    Ok(VerifyingKey {
+        alpha: Bn254G1Affine::try_from_bytes(&VK_ALPHA)
+            .map_err(|_| FundProofError::MalformedVerifyingKey)?,
+        beta: Bn254G2Affine::try_from_bytes(&VK_BETA_2)
+            .map_err(|_| FundProofError::MalformedVerifyingKey)?,
+        gamma: Bn254G2Affine::try_from_bytes(&VK_GAMMA_2)
+            .map_err(|_| FundProofError::MalformedVerifyingKey)?,
+        delta: Bn254G2Affine::try_from_bytes(&VK_DELTA_2)
+            .map_err(|_| FundProofError::MalformedVerifyingKey)?,
         ic,
-    }
+    })
 }
