@@ -1,0 +1,1 @@
+{"rustc":1562763049001146449,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[9570233286904023282,"build_script_build",false,8431752963807511057]],"local":[{"RerunIfChanged":{"output":"release\\build\\ark-ff-ff9e4b576c51e422\\output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}

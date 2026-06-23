@@ -1,0 +1,10 @@
+C:\Users\hp\Desktop\Stellar Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\target\release\deps\soroban_spec_rust-b4fdb814466d6eb5.d: C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\lib.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\syn_ext.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\trait.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\types.rs
+
+C:\Users\hp\Desktop\Stellar Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\target\release\deps\libsoroban_spec_rust-b4fdb814466d6eb5.rlib: C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\lib.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\syn_ext.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\trait.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\types.rs
+
+C:\Users\hp\Desktop\Stellar Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\target\release\deps\libsoroban_spec_rust-b4fdb814466d6eb5.rmeta: C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\lib.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\syn_ext.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\trait.rs C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\types.rs
+
+C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\lib.rs:
+C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\syn_ext.rs:
+C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\trait.rs:
+C:\Users\hp\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\soroban-spec-rust-26.1.0\src\types.rs:

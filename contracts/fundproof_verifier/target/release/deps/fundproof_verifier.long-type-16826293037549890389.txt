@@ -1,0 +1,3 @@
+ark_ec::models::short_weierstrass_jacobian::GroupAffine<P>
+ark_ec::models::short_weierstrass_jacobian::GroupAffine<ark_bn254::g1::Parameters>
+ark_ec::models::short_weierstrass_jacobian::GroupAffine<ark_bn254::g2::Parameters>

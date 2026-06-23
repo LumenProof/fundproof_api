@@ -1,0 +1,110 @@
+ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>
+ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>: TryFromVal<Env, soroban_sdk::Val>
+TryIntoVal<Env, ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>
+soroban_sdk::Val: TryFromVal<Env, ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7)>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7, T8)>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)>
+TryFromVal<E, &(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)>
+TryFromVal<E, &soroban_env_common::bytes::BytesObject>
+TryFromVal<E, &soroban_env_common::num::DurationObject>
+TryFromVal<E, &soroban_env_common::num::DurationSmall>
+TryFromVal<E, &soroban_env_common::num::DurationVal>
+TryFromVal<E, &soroban_env_common::num::I128Object>
+TryFromVal<E, &soroban_env_common::num::I128Small>
+TryFromVal<E, &soroban_env_common::num::I128Val>
+TryFromVal<E, &soroban_env_common::num::I256Object>
+TryFromVal<E, &soroban_env_common::num::I256Small>
+TryFromVal<E, &soroban_env_common::num::I256Val>
+TryFromVal<E, &soroban_env_common::num::I32Val>
+TryFromVal<E, &soroban_env_common::num::I64Object>
+TryFromVal<E, &soroban_env_common::num::I64Small>
+TryFromVal<E, &soroban_env_common::num::I64Val>
+TryFromVal<E, &soroban_env_common::num::TimepointObject>
+TryFromVal<E, &soroban_env_common::num::TimepointSmall>
+TryFromVal<E, &soroban_env_common::num::TimepointVal>
+TryFromVal<E, &soroban_env_common::num::U128Object>
+TryFromVal<E, &soroban_env_common::num::U128Small>
+TryFromVal<E, &soroban_env_common::num::U128Val>
+TryFromVal<E, &soroban_env_common::num::U256Object>
+TryFromVal<E, &soroban_env_common::num::U256Small>
+TryFromVal<E, &soroban_env_common::num::U256Val>
+TryFromVal<E, &soroban_env_common::num::U32Val>
+TryFromVal<E, &soroban_env_common::num::U64Object>
+TryFromVal<E, &soroban_env_common::num::U64Small>
+TryFromVal<E, &soroban_env_common::num::U64Val>
+TryFromVal<E, &soroban_env_common::object::Object>
+TryFromVal<E, &soroban_env_common::string::StringObject>
+TryFromVal<E, &soroban_env_common::symbol::Symbol>
+TryFromVal<E, &soroban_env_common::symbol::SymbolObject>
+TryFromVal<E, &soroban_env_common::symbol::SymbolSmall>
+TryFromVal<E, &soroban_env_common::val::AddressObject>
+TryFromVal<E, &soroban_env_common::val::MuxedAddressObject>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7)>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7, T8)>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)>
+TryFromVal<E, (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)>
+TryFromVal<E, soroban_env_common::bytes::BytesObject>
+TryFromVal<E, soroban_env_common::num::DurationObject>
+TryFromVal<E, soroban_env_common::num::DurationSmall>
+TryFromVal<E, soroban_env_common::num::DurationVal>
+TryFromVal<E, soroban_env_common::num::I128Object>
+TryFromVal<E, soroban_env_common::num::I128Small>
+TryFromVal<E, soroban_env_common::num::I128Val>
+TryFromVal<E, soroban_env_common::num::I256Object>
+TryFromVal<E, soroban_env_common::num::I256Small>
+TryFromVal<E, soroban_env_common::num::I256Val>
+TryFromVal<E, soroban_env_common::num::I64Object>
+TryFromVal<E, soroban_env_common::num::I64Small>
+TryFromVal<E, soroban_env_common::num::TimepointObject>
+TryFromVal<E, soroban_env_common::num::TimepointSmall>
+TryFromVal<E, soroban_env_common::num::TimepointVal>
+TryFromVal<E, soroban_env_common::num::U128Object>
+TryFromVal<E, soroban_env_common::num::U128Small>
+TryFromVal<E, soroban_env_common::num::U128Val>
+TryFromVal<E, soroban_env_common::num::U256Object>
+TryFromVal<E, soroban_env_common::num::U256Small>
+TryFromVal<E, soroban_env_common::num::U256Val>
+TryFromVal<E, soroban_env_common::num::U64Object>
+TryFromVal<E, soroban_env_common::num::U64Small>
+TryFromVal<E, soroban_env_common::object::Object>
+TryFromVal<E, soroban_env_common::string::StringObject>
+TryFromVal<E, soroban_env_common::symbol::Symbol>
+TryFromVal<E, soroban_env_common::symbol::SymbolObject>
+TryFromVal<E, soroban_env_common::symbol::SymbolSmall>
+TryFromVal<E, soroban_env_common::val::AddressObject>
+TryFromVal<E, soroban_env_common::val::MuxedAddressObject>
+TryFromVal<Env, &CreateContractWithConstructorHostFnContext>
+TryFromVal<Env, &soroban_sdk::auth::ContractExecutable>
+TryFromVal<Env, CreateContractWithConstructorHostFnContext>
+TryFromVal<Env, soroban_sdk::auth::ContractExecutable>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::account_contract::AccountEd25519Signature>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::account_contract::AuthorizationContext>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::account_contract::ContractAuthorizationContext>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::account_contract::CreateContractHostFnContext>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::account_contract::CreateContractWithConstructorHostFnContext>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::base_types::Address>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::base_types::BytesN<N>>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::base_types::MuxedAddress>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::base_types::String>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::base_types::Vec>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::common_types::AddressExecutable>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::common_types::ContractExecutable>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::invoker_contract_auth::InvokerContractAuthEntry>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::invoker_contract_auth::SubContractInvocation>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::metadata::StellarAssetContractMetadata>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::public_types::AlphaNum12AssetInfo>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::public_types::AlphaNum4AssetInfo>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::public_types::AssetInfo>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::storage_types::AllowanceDataKey>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::storage_types::AllowanceValue>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::storage_types::BalanceValue>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::storage_types::DataKey>
+TryFromVal<soroban_env_host::host::Host, soroban_env_host::builtin_contracts::stellar_asset_contract::storage_types::InstanceDataKey>
+FromVal<Env, ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>
+soroban_sdk::Vec<ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>
+TryIntoVal<Env, soroban_sdk::Vec<ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>>

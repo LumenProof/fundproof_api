@@ -1,0 +1,1 @@
+soroban_sdk::Vec<ark_ec::models::short_weierstrass::affine::Affine<ark_bn254::g1::Config>>

@@ -1,0 +1,1 @@
+C:\Users\hp\Desktop\Stellar\ Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\target\release\fundproof_verifier.dll: C:\Users\hp\Desktop\Stellar\ Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\src\lib.rs C:\Users\hp\Desktop\Stellar\ Hackathon\stellar-fundproof\fundproof-api\contracts\fundproof_verifier\src\vk_data.rs
