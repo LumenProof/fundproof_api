@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 import { FundProofService } from './fundproof.service';
 
@@ -40,5 +40,10 @@ export class FundProofController {
   @Post('proofs/generate')
   generateProof(@Body() dto: PrepareProofInputDto) {
     return this.fundProof.generateProof(dto.attestationId);
+  }
+
+  @Get('verify/:attestationId')
+  verifyProof(@Param('attestationId') attestationId: string) {
+    return this.fundProof.verifyProof(attestationId);
   }
 }
