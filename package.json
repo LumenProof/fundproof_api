@@ -18,9 +18,10 @@
     "zk:all": "npm run zk:compile && npm run zk:ptau && npm run zk:setup && npm run zk:contribute && npm run zk:export-vkey && npm run zk:demo-input && npm run zk:prove && npm run zk:verify"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.6",
-    "@nestjs/core": "^11.1.6",
-    "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
     "@noble/ed25519": "^2.3.0",
     "@noble/hashes": "^1.8.0",
     "circomlibjs": "^0.1.7",
@@ -31,9 +32,9 @@
     "snarkjs": "^0.7.5"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.10",
-    "@nestjs/schematics": "^11.0.7",
-    "@nestjs/testing": "^11.1.6",
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/schematics": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.0",
     "circomlib": "^2.0.5",
