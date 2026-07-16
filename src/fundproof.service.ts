@@ -77,10 +77,6 @@ export class FundProofService {
       attestationHash,
       signature,
       publicKey: bytesToHex(await ed.getPublicKeyAsync(privateKey)),
-      demo: {
-        mockBalanceCents: balanceCents,
-        note: 'For local development the API uses MOCK_USDC_BALANCE_CENTS. Replace getUsdcBalanceCents with Horizon/Soroban USDC balance lookup for testnet.',
-      },
     };
   }
 
@@ -148,12 +144,33 @@ export class FundProofService {
     };
   }
 
-  private async getUsdcBalanceCents(_stellarAddress: string): Promise<number> {
+  private async getUsdcBalanceCents(stellarAddress: string): Promise<number> {
     if ((process.env.USE_MOCK_BALANCES ?? 'true') === 'true') {
       return Number(process.env.MOCK_USDC_BALANCE_CENTS ?? 125000);
     }
 
-    throw new BadRequestException('Real Stellar USDC lookup is not configured yet.');
+    try {
+      const response = await fetch(`https://horizon.stellar.org/accounts/${stellarAddress}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch account details: ${response.statusText}`);
+      }
+      const account = await response.json();
+      const usdcBalance = account.balances.find(
+        (balance: any) =>
+          balance.asset_type !== 'native' &&
+          balance.asset_code === 'USDC' &&
+          balance.asset_issuer === 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
+      );
+
+      if (usdcBalance) {
+        return Math.round(parseFloat(usdcBalance.balance) * 100);
+      }
+
+      return 0;
+    } catch (error) {
+      console.error('Error fetching USDC balance:', error);
+      throw new BadRequestException('Failed to fetch USDC balance from the Stellar network.');
+    }
   }
 
   private getFreshAttestation(attestationId: string): StoredAttestation {
