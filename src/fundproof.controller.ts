@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import { Throttle } from 'nestjs-throttler';
 import { FundProofService } from './fundproof.service';
 
 class CreateAttestationDto {
@@ -37,6 +38,7 @@ export class FundProofController {
     return this.fundProof.prepareCircuitInput(dto.attestationId);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('proofs/generate')
   generateProof(@Body() dto: PrepareProofInputDto) {
     return this.fundProof.generateProof(dto.attestationId);
