@@ -8,6 +8,6 @@ export class FundProofProcessor {
 
   @Process()
   async transcode(job: Job<{ attestationId: string }>) {
-    await this.fundProofService.generateProof(job.data.attestationId);
+    await this.fundProofService.processProof(job.data.attestationId);
   }
 }
