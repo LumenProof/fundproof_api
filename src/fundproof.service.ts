@@ -11,6 +11,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { StoredAttestation } from './fundproof.entity';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 const execFileAsync = promisify(execFile);
 
@@ -21,6 +23,7 @@ export class FundProofService {
   constructor(
     @InjectRepository(StoredAttestation)
     private readonly attestationsRepository: Repository<StoredAttestation>,
+    @InjectQueue('proof-generation') private readonly proofGenerationQueue: Queue,
   ) {}
 
   async createAttestation(stellarAddress: string, thresholdCents: number) {
@@ -93,22 +96,6 @@ export class FundProofService {
     };
   }
 
-  import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-
-// ... (imports)
-
-@Injectable()
-export class FundProofService {
-  // ... (logger and constructor)
-  constructor(
-    @InjectRepository(StoredAttestation)
-    private readonly attestationsRepository: Repository<StoredAttestation>,
-    @InjectQueue('proof-generation') private readonly proofGenerationQueue: Queue,
-  ) {}
-
-  // ... (other methods)
-
   async generateProof(attestationId: string) {
     await this.proofGenerationQueue.add({
       attestationId,
@@ -116,14 +103,40 @@ export class FundProofService {
   }
 
   async processProof(attestationId: string) {
-    this.logger.log(`Generating proof for attestation: ${attestationId}`);
+    this.logger.log(`Processing proof for attestation: ${attestationId}`);
     const attestation = await this.getFreshAttestation(attestationId);
-    // ... (rest of the original generateProof logic)
+    const input = this.toCircuitInput(attestation);
+    const proofDir = resolve('build', 'proofs', attestation.id);
+    const inputPath = join(proofDir, 'input.json');
+    const proofPath = join(proofDir, 'proof.json');
+    const publicPath = join(proofDir, 'public.json');
+
+    await this.assertZkArtifactsExist();
+    await mkdir(proofDir, { recursive: true });
+    await writeFile(inputPath, `${JSON.stringify(input, null, 2)}\n`);
+    this.logger.debug(`Input written to: ${inputPath}`);
+
+    this.logger.log('Starting snarkjs fullprove...');
+    await this.runSnarkjs([
+      'groth16',
+      'fullprove',
+      inputPath,
+      resolve('build', 'circuits', 'fundproof_js', 'fundproof.wasm'),
+      resolve('build', 'circuits', 'fundproof_final.zkey'),
+      proofPath,
+      publicPath,
+    ]);
+    this.logger.log('Proof generated successfully, verifying...');
+
+    await this.runSnarkjs([
+      'groth16',
+      'verify',
+      resolve('build', 'circuits', 'verification_key.json'),
+      publicPath,
+      proofPath,
+    ]);
+    this.logger.log(`✅ Proof verified successfully for attestation: ${attestationId}`);
   }
-
-  // ... (rest of the service)
-}
-
 
   private async getUsdcBalanceCents(stellarAddress: string): Promise<number> {
     if ((process.env.USE_MOCK_BALANCES ?? 'true') === 'true') {
@@ -242,7 +255,7 @@ export class FundProofService {
     try {
       await execFileAsync(process.execPath, [snarkjsCli, ...args], {
         cwd: process.cwd(),
-        windowsHide: true,
+        windowsHide: true,,
         timeout: 120_000,
       });
     } catch (error) {
