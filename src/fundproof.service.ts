@@ -99,6 +99,7 @@ export class FundProofService {
   }
 
   async generateProof(attestationId: string) {
+    this.logger.log(`Generating proof for attestation: ${attestationId}`);
     const attestation = this.getFreshAttestation(attestationId);
     const input = this.toCircuitInput(attestation);
     const proofDir = resolve('build', 'proofs', attestation.id);
@@ -109,7 +110,9 @@ export class FundProofService {
     await this.assertZkArtifactsExist();
     await mkdir(proofDir, { recursive: true });
     await writeFile(inputPath, `${JSON.stringify(input, null, 2)}\n`);
+    this.logger.debug(`Input written to: ${inputPath}`);
 
+    this.logger.log('Starting snarkjs fullprove...');
     await this.runSnarkjs([
       'groth16',
       'fullprove',
@@ -119,6 +122,7 @@ export class FundProofService {
       proofPath,
       publicPath,
     ]);
+    this.logger.log('Proof generated successfully, verifying...');
 
     await this.runSnarkjs([
       'groth16',
@@ -127,6 +131,7 @@ export class FundProofService {
       publicPath,
       proofPath,
     ]);
+    this.logger.log(`✅ Proof verified successfully for attestation: ${attestationId}`);
 
     const proof = JSON.parse(await readFile(proofPath, 'utf8')) as unknown;
     const publicSignals = JSON.parse(await readFile(publicPath, 'utf8')) as string[];
