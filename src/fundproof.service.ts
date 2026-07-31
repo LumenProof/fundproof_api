@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { sha256 } from '@noble/hashes/sha256';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
 import * as ed from '@noble/ed25519';
@@ -25,9 +25,11 @@ type StoredAttestation = {
 
 @Injectable()
 export class FundProofService {
+  private readonly logger = new Logger(FundProofService.name);
   private readonly attestations = new Map<string, StoredAttestation>();
 
   async createAttestation(stellarAddress: string, thresholdCents: number) {
+    this.logger.log(`Creating attestation for address: ${stellarAddress.slice(0, 12)}..., threshold: $${(thresholdCents / 100).toFixed(2)}`);
     if (!stellarAddress.startsWith('G') || stellarAddress.length < 20) {
       throw new BadRequestException('Expected a Stellar public address that starts with G.');
     }
