@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { sha256 } from '@noble/hashes/sha256';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
 import * as ed from '@noble/ed25519';
@@ -8,25 +10,18 @@ import { randomBytes } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
+import { StoredAttestation } from './fundproof.entity';
 
 const execFileAsync = promisify(execFile);
-
-type StoredAttestation = {
-  id: string;
-  stellarAddress: string;
-  thresholdCents: number;
-  balanceCents: number;
-  nonce: string;
-  expiresAt: number;
-  addressHash: string;
-  attestationHash: string;
-  signature: string;
-};
 
 @Injectable()
 export class FundProofService {
   private readonly logger = new Logger(FundProofService.name);
-  private readonly attestations = new Map<string, StoredAttestation>();
+
+  constructor(
+    @InjectRepository(StoredAttestation)
+    private readonly attestationsRepository: Repository<StoredAttestation>,
+  ) {}
 
   async createAttestation(stellarAddress: string, thresholdCents: number) {
     this.logger.log(`Creating attestation for address: ${stellarAddress.slice(0, 12)}..., threshold: $${(thresholdCents / 100).toFixed(2)}`);
@@ -57,7 +52,7 @@ export class FundProofService {
     const signature = bytesToHex(await ed.signAsync(message, privateKey));
     const id = bytesToHex(sha256(message)).slice(0, 24);
 
-    const attestation: StoredAttestation = {
+    const attestation = this.attestationsRepository.create({
       id,
       stellarAddress,
       thresholdCents,
@@ -67,8 +62,8 @@ export class FundProofService {
       addressHash,
       attestationHash,
       signature,
-    };
-    this.attestations.set(id, attestation);
+    });
+    await this.attestationsRepository.save(attestation);
 
     return {
       id,
@@ -83,7 +78,7 @@ export class FundProofService {
   }
 
   async prepareCircuitInput(attestationId: string) {
-    const attestation = this.getFreshAttestation(attestationId);
+    const attestation = await this.getFreshAttestation(attestationId);
     const input = this.toCircuitInput(attestation);
 
     return {
@@ -100,7 +95,7 @@ export class FundProofService {
 
   async generateProof(attestationId: string) {
     this.logger.log(`Generating proof for attestation: ${attestationId}`);
-    const attestation = this.getFreshAttestation(attestationId);
+    const attestation = await this.getFreshAttestation(attestationId);
     const input = this.toCircuitInput(attestation);
     const proofDir = resolve('build', 'proofs', attestation.id);
     const inputPath = join(proofDir, 'input.json');
@@ -180,8 +175,8 @@ export class FundProofService {
     }
   }
 
-  private getFreshAttestation(attestationId: string): StoredAttestation {
-    const attestation = this.attestations.get(attestationId);
+  private async getFreshAttestation(attestationId: string): Promise<StoredAttestation> {
+    const attestation = await this.attestationsRepository.findOneBy({ id: attestationId });
     if (!attestation) {
       throw new NotFoundException('Unknown attestation id.');
     }
@@ -218,7 +213,7 @@ export class FundProofService {
 
   async verifyProof(attestationId: string) {
     try {
-      const attestation = this.attestations.get(attestationId);
+      const attestation = await this.attestationsRepository.findOneBy({ id: attestationId });
       if (!attestation) {
         throw new NotFoundException('Proof not found');
       }
