@@ -63,8 +63,9 @@ export class FundProofService {
     const attestation = this.attestationsRepository.create({
       id,
       stellarAddress,
-      thresholdCents,
-      balanceCents,
+      totalThresholdCents: thresholdCents,
+      assetBalances,
+      totalBalanceCents,
       nonce,
       expiresAt,
       addressHash,
@@ -76,7 +77,9 @@ export class FundProofService {
     return {
       id,
       stellarAddress,
-      thresholdCents,
+      totalThresholdCents: thresholdCents,
+      assetBalances,
+      totalBalanceCents,
       expiresAt,
       addressHash,
       attestationHash,
