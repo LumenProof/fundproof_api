@@ -52,4 +52,10 @@ export class FundProofController {
   verifyProof(@Param('attestationId') attestationId: string) {
     return this.fundProof.verifyProof(attestationId);
   }
+
+  // New endpoint to get supported assets for frontend
+  @Get('supported-assets')
+  getSupportedAssets() {
+    return this.fundProof.getSupportedAssets();
+  }
 }

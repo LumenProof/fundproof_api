@@ -235,11 +235,15 @@ export class FundProofService {
   }
 
   private toCircuitInput(attestation: StoredAttestation) {
+    // Extract individual balances and pad to 5 assets (circuit requirement)
+    const balances = attestation.assetBalances.map(ab => ab.balance.toString());
+    while (balances.length < 5) balances.push('0');
+
     return {
-      balance: attestation.balanceCents.toString(),
-      threshold: attestation.thresholdCents.toString(),
-      addressHash: attestation.addressHash,
+      balances: [balances[0], balances[1], balances[2], balances[3], balances[4]],
       nonce: BigInt(`0x${attestation.nonce}`).toString(),
+      totalThreshold: attestation.totalThresholdCents.toString(),
+      addressHash: attestation.addressHash,
       expiresAt: attestation.expiresAt.toString(),
       attestationHash: attestation.attestationHash,
     };
