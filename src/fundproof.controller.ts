@@ -46,11 +46,7 @@ export class FundProofController {
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('proofs/generate')
   async generateProof(@Body() dto: PrepareProofInputDto) {
-    await this.fundProof.generateProof(dto.attestationId);
-    return {
-      message: 'Proof generation has been queued.',
-      attestationId: dto.attestationId,
-    };
+    return await this.fundProof.generateProof(dto.attestationId);
   }
 
   @Get('verify/:attestationId')

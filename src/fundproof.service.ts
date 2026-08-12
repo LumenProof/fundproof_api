@@ -11,8 +11,6 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { StoredAttestation } from './fundproof.entity';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 
 const execFileAsync = promisify(execFile);
 
@@ -23,7 +21,6 @@ export class FundProofService {
   constructor(
     @InjectRepository(StoredAttestation)
     private readonly attestationsRepository: Repository<StoredAttestation>,
-    @InjectQueue('proof-generation') private readonly proofGenerationQueue: Queue,
   ) {}
 
   async createAttestation(stellarAddress: string, thresholdCents: number, selectedAssets: string[]) {
@@ -110,9 +107,8 @@ export class FundProofService {
   }
 
   async generateProof(attestationId: string) {
-    await this.proofGenerationQueue.add({
-      attestationId,
-    });
+    // Process proof synchronously instead of using Redis queue for local development
+    return await this.processProof(attestationId);
   }
 
   async processProof(attestationId: string) {
@@ -149,6 +145,26 @@ export class FundProofService {
       proofPath,
     ]);
     this.logger.log(`✅ Proof verified successfully for attestation: ${attestationId}`);
+
+    // Read the generated files and return them
+    const [proof, publicSignals] = await Promise.all([
+      readFile(proofPath, 'utf8'),
+      readFile(publicPath, 'utf8')
+    ]);
+
+    return {
+      attestationId,
+      verified: true,
+      proof: JSON.parse(proof),
+      publicSignals: JSON.parse(publicSignals),
+      publicSignalNames: ['totalBalance', 'threshold', 'addressHash', 'expiresAt', 'attestationHash'],
+      files: {
+        input: inputPath,
+        proof: proofPath,
+        public: publicPath,
+      },
+      nextStep: 'Proof generated and verified successfully! You can now share the attestation.',
+    };
   }
 
   // Supported major Stellar assets with their issuers and USD conversion rates
@@ -309,6 +325,12 @@ export class FundProofService {
         proof,
         publicSignals,
         publicSignalNames: ['threshold', 'addressHash', 'expiresAt', 'attestationHash'],
+        attestation: {
+          stellarAddress: attestation.stellarAddress,
+          thresholdCents: attestation.totalThresholdCents,
+          createdAt: Date.now() - (attestation.expiresAt - Math.floor(Date.now() / 1000)) * 1000,
+          verifiedAt: Date.now(),
+        },
         files: {
           input: join(proofDir, 'input.json'),
           proof: proofPath,
@@ -316,7 +338,8 @@ export class FundProofService {
         },
         nextStep: 'Submit proof and public signals to the Soroban Groth16 verifier contract.',
       };
-    } catch {
+    } catch (error) {
+      console.error('Error reading proof files:', error);
       return {
         verified: false,
         status: 'processing',
