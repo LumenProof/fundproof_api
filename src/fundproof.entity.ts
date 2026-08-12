@@ -19,7 +19,7 @@ export class StoredAttestation {
   totalThresholdCents!: number; // Combined minimum balance across all assets
 
   // Store individual asset balances as JSON
-  @Column('jsonb')
+  @Column('json')
   assetBalances!: AssetBalance[];
 
   // Calculated total balance (sum of all asset balances converted to USD cents equivalent)
