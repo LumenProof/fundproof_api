@@ -24,7 +24,7 @@ template MultiAssetFundProof() {
     balanceIsBelowThreshold.out === 0;
     
     // Include all balances in the poseidon hash to keep them cryptographically bound to the attestation
-    component attestation = Poseidon(9);
+    component attestation = Poseidon(8);
     attestation.inputs[0] <== balances[0];
     attestation.inputs[1] <== balances[1];
     attestation.inputs[2] <== balances[2];
