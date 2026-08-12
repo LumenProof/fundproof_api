@@ -95,11 +95,13 @@ export class FundProofService {
     return {
       input,
       publicSignals: {
-        threshold: input.threshold,
+        totalThreshold: input.totalThreshold,
         addressHash: input.addressHash,
         expiresAt: input.expiresAt,
         attestationHash: input.attestationHash,
       },
+      assetBalances: attestation.assetBalances,
+      totalBalanceCents: attestation.totalBalanceCents,
       nextStep: 'Call POST /proofs/generate with this attestationId to generate and verify the Groth16 proof locally.',
     };
   }
