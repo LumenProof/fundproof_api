@@ -1,5 +1,12 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
+// Interface for tracking individual asset balances
+export interface AssetBalance {
+  assetCode: string;
+  assetIssuer: string;
+  balance: number; // Balance in smallest units (cents for USD-based, 1e7 for XLM)
+}
+
 @Entity()
 export class StoredAttestation {
   @PrimaryColumn()
@@ -9,10 +16,15 @@ export class StoredAttestation {
   stellarAddress: string;
 
   @Column()
-  thresholdCents: number;
+  totalThresholdCents: number; // Combined minimum balance across all assets
 
+  // Store individual asset balances as JSON
+  @Column('jsonb')
+  assetBalances: AssetBalance[];
+
+  // Calculated total balance (sum of all asset balances converted to USD cents equivalent)
   @Column()
-  balanceCents: number;
+  totalBalanceCents: number;
 
   @Column()
   nonce: string;
