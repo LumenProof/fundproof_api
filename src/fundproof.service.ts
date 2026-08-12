@@ -27,17 +27,22 @@ export class FundProofService {
   ) {}
 
   async createAttestation(stellarAddress: string, thresholdCents: number) {
-    this.logger.log(`Creating attestation for address: ${stellarAddress.slice(0, 12)}..., threshold: $${(thresholdCents / 100).toFixed(2)}`);
+    this.logger.log(`Creating multi-asset attestation for address: ${stellarAddress.slice(0, 12)}..., total threshold: $${(thresholdCents / 100).toFixed(2)}`);
     if (!stellarAddress.startsWith('G') || stellarAddress.length < 20) {
       throw new BadRequestException('Expected a Stellar public address that starts with G.');
     }
 
-    const balanceCents = await this.getUsdcBalanceCents(stellarAddress);
+    const { assetBalances, totalBalanceCents } = await this.getAllAssetBalancesCents(stellarAddress);
     const nonce = randomBytes(16).toString('hex');
     const expiresAt = Math.floor(Date.now() / 1000) + 10 * 60;
     const addressHash = await this.poseidonHash([this.textToField(stellarAddress)]);
+    
+    // Convert all asset balances to BigInts for the circuit (array of 5 balances, pad with zeros if needed)
+    const balanceBigInts = assetBalances.map(ab => BigInt(ab.balance));
+    while (balanceBigInts.length < 5) balanceBigInts.push(BigInt(0));
+    
     const attestationHash = await this.poseidonHash([
-      BigInt(balanceCents),
+      ...balanceBigInts,
       BigInt(addressHash),
       BigInt(`0x${nonce}`),
       BigInt(expiresAt),
@@ -138,9 +143,41 @@ export class FundProofService {
     this.logger.log(`✅ Proof verified successfully for attestation: ${attestationId}`);
   }
 
-  private async getUsdcBalanceCents(stellarAddress: string): Promise<number> {
+  // Supported major Stellar assets with their issuers and USD conversion rates
+  private readonly SUPPORTED_ASSETS = [
+    {
+      assetCode: 'USDC',
+      assetIssuer: 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN',
+      usdRate: 1.0, // 1 USDC = 1 USD
+      decimals: 2
+    },
+    {
+      assetCode: 'XLM',
+      assetType: 'native',
+      usdRate: 0.15, // Mock XLM/USD rate (would fetch from oracle in production)
+      decimals: 7
+    },
+    {
+      assetCode: 'EURC',
+      assetIssuer: 'GB3O6Z56TVNDC2PLRYXJFQNPXYOWFA5C6S3G53D6H5FSUELH3B2DWR5E',
+      usdRate: 1.08, // 1 EURC ≈ 1.08 USD
+      decimals: 2
+    }
+  ];
+
+  private async getAllAssetBalancesCents(stellarAddress: string): Promise<{ 
+    assetBalances: Array<{ assetCode: string; assetIssuer: string; balance: number }>, 
+    totalBalanceCents: number 
+  }> {
     if ((process.env.USE_MOCK_BALANCES ?? 'true') === 'true') {
-      return Number(process.env.MOCK_USDC_BALANCE_CENTS ?? 125000);
+      // Mock multi-asset balances for testing
+      const mockBalances = [
+        { assetCode: 'USDC', assetIssuer: this.SUPPORTED_ASSETS[0].assetIssuer, balance: 125000 }, // $1,250 USDC
+        { assetCode: 'XLM', assetIssuer: 'native', balance: 500000000 }, // 5000 XLM ≈ $750
+        { assetCode: 'EURC', assetIssuer: this.SUPPORTED_ASSETS[2].assetIssuer, balance: 50000 } // €500 ≈ $540
+      ];
+      const totalCents = 125000 + 75000 + 54000; // $2,540 total
+      return { assetBalances: mockBalances, totalBalanceCents: totalCents };
     }
 
     try {
@@ -149,21 +186,37 @@ export class FundProofService {
         throw new Error(`Failed to fetch account details: ${response.statusText}`);
       }
       const account = await response.json();
-      const usdcBalance = account.balances.find(
-        (balance: any) =>
-          balance.asset_type !== 'native' &&
-          balance.asset_code === 'USDC' &&
-          balance.asset_issuer === 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
-      );
+      
+      const assetBalances: Array<{ assetCode: string; assetIssuer: string; balance: number }> = [];
+      let totalBalanceCents = 0;
 
-      if (usdcBalance) {
-        return Math.round(parseFloat(usdcBalance.balance) * 100);
+      for (const supported of this.SUPPORTED_ASSETS) {
+        const balance = account.balances.find((b: any) => {
+          if (supported.assetType === 'native') return b.asset_type === 'native';
+          return b.asset_type !== 'native' && 
+                 b.asset_code === supported.assetCode && 
+                 b.asset_issuer === supported.assetIssuer;
+        });
+
+        if (balance) {
+          const rawBalance = parseFloat(balance.balance);
+          const smallestUnits = Math.round(rawBalance * (10 ** supported.decimals));
+          const usdValueCents = Math.round(rawBalance * supported.usdRate * 100);
+          
+          assetBalances.push({
+            assetCode: supported.assetCode,
+            assetIssuer: supported.assetType === 'native' ? 'native' : supported.assetIssuer,
+            balance: smallestUnits
+          });
+          
+          totalBalanceCents += usdValueCents;
+        }
       }
 
-      return 0;
+      return { assetBalances, totalBalanceCents };
     } catch (error) {
-      console.error('Error fetching USDC balance:', error);
-      throw new BadRequestException('Failed to fetch USDC balance from the Stellar network.');
+      console.error('Error fetching multi-asset balances:', error);
+      throw new BadRequestException('Failed to fetch asset balances from the Stellar network.');
     }
   }
 
