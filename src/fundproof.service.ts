@@ -26,13 +26,16 @@ export class FundProofService {
     @InjectQueue('proof-generation') private readonly proofGenerationQueue: Queue,
   ) {}
 
-  async createAttestation(stellarAddress: string, thresholdCents: number) {
-    this.logger.log(`Creating multi-asset attestation for address: ${stellarAddress.slice(0, 12)}..., total threshold: $${(thresholdCents / 100).toFixed(2)}`);
+  async createAttestation(stellarAddress: string, thresholdCents: number, selectedAssets: string[]) {
+    this.logger.log(`Creating multi-asset attestation for address: ${stellarAddress.slice(0, 12)}..., total threshold: $${(thresholdCents / 100).toFixed(2)}, selected assets: ${selectedAssets.join(', ')}`);
     if (!stellarAddress.startsWith('G') || stellarAddress.length < 20) {
       throw new BadRequestException('Expected a Stellar public address that starts with G.');
     }
+    if (!selectedAssets || selectedAssets.length === 0) {
+      throw new BadRequestException('At least one asset must be selected.');
+    }
 
-    const { assetBalances, totalBalanceCents } = await this.getAllAssetBalancesCents(stellarAddress);
+    const { assetBalances, totalBalanceCents } = await this.getAllAssetBalancesCents(stellarAddress, selectedAssets);
     const nonce = randomBytes(16).toString('hex');
     const expiresAt = Math.floor(Date.now() / 1000) + 10 * 60;
     const addressHash = await this.poseidonHash([this.textToField(stellarAddress)]);
