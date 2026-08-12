@@ -263,6 +263,16 @@ export class FundProofService {
     }
   }
 
+  // Expose supported assets to frontend
+  getSupportedAssets() {
+    return this.SUPPORTED_ASSETS.map(asset => ({
+      assetCode: asset.assetCode,
+      assetIssuer: asset.assetType === 'native' ? 'native' : asset.assetIssuer,
+      usdRate: asset.usdRate,
+      decimals: asset.decimals
+    }));
+  }
+
   async verifyProof(attestationId: string) {
     const attestation = await this.attestationsRepository.findOneBy({ id: attestationId });
     if (!attestation) {
