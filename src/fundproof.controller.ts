@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Param } from '@nestjs/common';
-import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
-import { Throttle } from 'nestjs-throttler';
+import { IsInt, IsNotEmpty, IsString, Min, IsArray } from 'class-validator';
+import { Throttle } from '@nestjs/throttler';
 import { FundProofService } from './fundproof.service';
 
 class CreateAttestationDto {

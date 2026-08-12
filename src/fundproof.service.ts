@@ -156,18 +156,21 @@ export class FundProofService {
     {
       assetCode: 'USDC',
       assetIssuer: 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN',
+      assetType: 'credit_alphanum4',
       usdRate: 1.0, // 1 USDC = 1 USD
       decimals: 2
     },
     {
       assetCode: 'XLM',
       assetType: 'native',
+      assetIssuer: 'native',
       usdRate: 0.15, // Mock XLM/USD rate (would fetch from oracle in production)
       decimals: 7
     },
     {
       assetCode: 'EURC',
       assetIssuer: 'GB3O6Z56TVNDC2PLRYXJFQNPXYOWFA5C6S3G53D6H5FSUELH3B2DWR5E',
+      assetType: 'credit_alphanum4',
       usdRate: 1.08, // 1 EURC ≈ 1.08 USD
       decimals: 2
     }

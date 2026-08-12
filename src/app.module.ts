@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerModule, ThrottlerGuard } from 'nestjs-throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BullModule } from '@nestjs/bull';
 import { FundProofController } from './fundproof.controller';
