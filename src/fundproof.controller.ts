@@ -11,6 +11,11 @@ class CreateAttestationDto {
   @IsInt()
   @Min(1)
   thresholdCents!: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty()
+  selectedAssets!: string[];
 }
 
 class PrepareProofInputDto {
@@ -30,7 +35,7 @@ export class FundProofController {
 
   @Post('attestations')
   createAttestation(@Body() dto: CreateAttestationDto) {
-    return this.fundProof.createAttestation(dto.stellarAddress, dto.thresholdCents);
+    return this.fundProof.createAttestation(dto.stellarAddress, dto.thresholdCents, dto.selectedAssets);
   }
 
   @Post('proof-input')
