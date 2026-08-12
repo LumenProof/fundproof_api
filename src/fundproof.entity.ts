@@ -10,34 +10,34 @@ export interface AssetBalance {
 @Entity()
 export class StoredAttestation {
   @PrimaryColumn()
-  id: string;
+  id!: string;
 
   @Column()
-  stellarAddress: string;
+  stellarAddress!: string;
 
   @Column()
-  totalThresholdCents: number; // Combined minimum balance across all assets
+  totalThresholdCents!: number; // Combined minimum balance across all assets
 
   // Store individual asset balances as JSON
   @Column('jsonb')
-  assetBalances: AssetBalance[];
+  assetBalances!: AssetBalance[];
 
   // Calculated total balance (sum of all asset balances converted to USD cents equivalent)
   @Column()
-  totalBalanceCents: number;
+  totalBalanceCents!: number;
 
   @Column()
-  nonce: string;
+  nonce!: string;
 
   @Column()
-  expiresAt: number;
+  expiresAt!: number;
 
   @Column()
-  addressHash: string;
+  addressHash!: string;
 
   @Column()
-  attestationHash: string;
+  attestationHash!: string;
 
   @Column()
-  signature: string;
+  signature!: string;
 }

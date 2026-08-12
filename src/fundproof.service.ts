@@ -54,7 +54,7 @@ export class FundProofService {
     const privateKey = this.attestationPrivateKey();
     const message = this.canonicalBytes({
       stellarAddress,
-      balanceCents,
+      balanceCents: totalBalanceCents,
       nonce,
       expiresAt,
       addressHash,
@@ -280,6 +280,7 @@ export class FundProofService {
     return this.SUPPORTED_ASSETS.map(asset => ({
       assetCode: asset.assetCode,
       assetIssuer: asset.assetType === 'native' ? 'native' : asset.assetIssuer,
+      assetType: asset.assetType || 'credit_alphanum4',
       usdRate: asset.usdRate,
       decimals: asset.decimals
     }));
@@ -326,7 +327,7 @@ export class FundProofService {
     try {
       await execFileAsync(process.execPath, [snarkjsCli, ...args], {
         cwd: process.cwd(),
-        windowsHide: true,,
+        windowsHide: true,
         timeout: 120_000,
       });
     } catch (error) {
