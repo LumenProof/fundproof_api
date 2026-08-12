@@ -173,19 +173,25 @@ export class FundProofService {
     }
   ];
 
-  private async getAllAssetBalancesCents(stellarAddress: string): Promise<{ 
+  private async getAllAssetBalancesCents(stellarAddress: string, selectedAssets: string[]): Promise<{ 
     assetBalances: Array<{ assetCode: string; assetIssuer: string; balance: number }>, 
     totalBalanceCents: number 
   }> {
     if ((process.env.USE_MOCK_BALANCES ?? 'true') === 'true') {
       // Mock multi-asset balances for testing
-      const mockBalances = [
-        { assetCode: 'USDC', assetIssuer: this.SUPPORTED_ASSETS[0].assetIssuer, balance: 125000 }, // $1,250 USDC
-        { assetCode: 'XLM', assetIssuer: 'native', balance: 500000000 }, // 5000 XLM ≈ $750
-        { assetCode: 'EURC', assetIssuer: this.SUPPORTED_ASSETS[2].assetIssuer, balance: 50000 } // €500 ≈ $540
+      const allMockBalances = [
+        { assetCode: 'USDC', assetIssuer: this.SUPPORTED_ASSETS[0].assetIssuer, balance: 125000, usdValueCents: 125000 }, // $1,250 USDC
+        { assetCode: 'XLM', assetIssuer: 'native', balance: 500000000, usdValueCents: 75000 }, // 5000 XLM ≈ $750
+        { assetCode: 'EURC', assetIssuer: this.SUPPORTED_ASSETS[2].assetIssuer, balance: 50000, usdValueCents: 54000 } // €500 ≈ $540
       ];
-      const totalCents = 125000 + 75000 + 54000; // $2,540 total
-      return { assetBalances: mockBalances, totalBalanceCents: totalCents };
+      
+      // Filter to only selected assets
+      const filteredBalances = allMockBalances.filter(b => selectedAssets.includes(b.assetCode));
+      const totalCents = filteredBalances.reduce((sum, b) => sum + b.usdValueCents, 0);
+      
+      // Return just the required fields (remove usdValueCents)
+      const assetBalances = filteredBalances.map(({ assetCode, assetIssuer, balance }) => ({ assetCode, assetIssuer, balance }));
+      return { assetBalances, totalBalanceCents: totalCents };
     }
 
     try {
@@ -198,7 +204,8 @@ export class FundProofService {
       const assetBalances: Array<{ assetCode: string; assetIssuer: string; balance: number }> = [];
       let totalBalanceCents = 0;
 
-      for (const supported of this.SUPPORTED_ASSETS) {
+      // Only process selected assets
+      for (const supported of this.SUPPORTED_ASSETS.filter(s => selectedAssets.includes(s.assetCode))) {
         const balance = account.balances.find((b: any) => {
           if (supported.assetType === 'native') return b.asset_type === 'native';
           return b.asset_type !== 'native' && 
